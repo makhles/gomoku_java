@@ -13,10 +13,10 @@ public class TileButton extends JButton {
     private int row;
     private int col;
 
-    static ImageIcon darkTileIcon = createImageIcon("/images/tile_dark2.png", "");
-    static ImageIcon lightTileIcon = createImageIcon("/images/tile_light2.png", "");
-    static ImageIcon blackStoneIcon = createImageIcon("/images/stone_black2.png", "");
-    static ImageIcon whiteStoneIcon = createImageIcon("/images/stone_white2.png", "");
+    static ImageIcon darkTileIcon = createImageIcon("/images/tile_dark.png", "");
+    static ImageIcon lightTileIcon = createImageIcon("/images/tile_light.png", "");
+    static ImageIcon blackStoneIcon = createImageIcon("/images/stone_black.png", "");
+    static ImageIcon whiteStoneIcon = createImageIcon("/images/stone_white.png", "");
 
     
     public TileButton(int row, int col, int width, int height) {

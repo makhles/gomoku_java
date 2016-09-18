@@ -13,6 +13,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 import model.Game;
@@ -26,6 +28,7 @@ public class Gomoku extends JFrame implements UserInterface {
     private JPanel mainPanel;
     private JPanel board;
     private JPanel scorePanel;
+    private JTextArea console;
 
     public Gomoku() {
         initUI();
@@ -57,15 +60,12 @@ public class Gomoku extends JFrame implements UserInterface {
         pvpMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                mainPanel.removeAll();
                 Game game = new PvPGame();
                 board = new Board(game);
                 board.setVisible(true);
-                scorePanel = new JPanel();
-                scorePanel.setLayout(new GridLayout(2, 2));
-                scorePanel.setPreferredSize(new Dimension(750, 100));
-                scorePanel.setVisible(true);
                 mainPanel.add(board);
-                mainPanel.add(scorePanel);
+                createScorePanel();
                 revalidate();
             }
         });
@@ -74,13 +74,12 @@ public class Gomoku extends JFrame implements UserInterface {
         pveMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                mainPanel.removeAll();
                 Game game = new PvEGame();
                 board = new Board(game);
                 board.setVisible(true);
-                scorePanel = new JPanel(new GridLayout(2, 2));
-                scorePanel.setVisible(true);
                 mainPanel.add(board);
-                mainPanel.add(scorePanel);
+                createScorePanel();
                 revalidate();
             }
         });
@@ -100,6 +99,18 @@ public class Gomoku extends JFrame implements UserInterface {
         setJMenuBar(menuBar);
     }
 
+    /**
+     * Creates the score panel at the bottom of the application window.
+     */
+    private void createScorePanel() {
+        console = new JTextArea();
+        scorePanel = new JPanel();
+        scorePanel.add(new JScrollPane(console));
+        scorePanel.setPreferredSize(new Dimension(750, 100));
+        scorePanel.setVisible(true);
+        mainPanel.add(scorePanel);
+    }
+
     @Override
     public void update() {
         // TODO Auto-generated method stub
@@ -111,6 +122,7 @@ public class Gomoku extends JFrame implements UserInterface {
             public void run() {
                 Gomoku gomoku = new Gomoku();
                 gomoku.pack();
+                gomoku.setLocationRelativeTo(null);  // Center the window on the screen
                 gomoku.setVisible(true);
             }
         });
