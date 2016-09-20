@@ -66,6 +66,7 @@ public class Gomoku extends JFrame implements UserInterface {
                 board.setVisible(true);
                 mainPanel.add(board);
                 createScorePanel();
+                game.startGame();
                 revalidate();
             }
         });
@@ -77,9 +78,11 @@ public class Gomoku extends JFrame implements UserInterface {
                 mainPanel.removeAll();
                 Game game = new PvEGame();
                 board = new Board(game);
+                game.addInterfaceObserver(Gomoku.this);
                 board.setVisible(true);
                 mainPanel.add(board);
                 createScorePanel();
+                game.startGame();
                 revalidate();
             }
         });
