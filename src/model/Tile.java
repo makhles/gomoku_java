@@ -1,21 +1,43 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Tile {
 
     private int row;
     private int col;
     private StoneType type;
+    private List<Direction> visited;
 
     public Tile(int row, int col) {
         this.row = row;
         this.col = col;
         this.type = null;
+        visited = new ArrayList<>();
     }
 
     public Tile(int row, int col, StoneType type) {
         this.row = row;
         this.col = col;
         this.type = type;
+        visited = new ArrayList<>();
+    }
+
+    /**
+     * Checks if this tile has been visited in the specified direction.
+     * @param direction - the direction.
+     * @return True if it has.
+     */
+    public boolean visited(Direction direction) {
+        return visited.contains(direction);
+    }
+
+    /**
+     * Clears the list of visited directions.
+     */
+    public void clearVisited() {
+        visited.clear();
     }
 
     public int getRow() {
