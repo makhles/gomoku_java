@@ -1,14 +1,16 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BoardConfig {
 
     static final int GRID_ROWS = 15;
     static final int GRID_COLS = 15;
 
-    private List<Tile> stones;
+    private Map<String, Tile> stones;
 
     /**
      * List of {@link Tile}s that are not occupied by
@@ -18,11 +20,11 @@ public class BoardConfig {
     private List<Tile> emptyNeighbours; 
 
     public BoardConfig() {
-        stones = new ArrayList<>();
+        stones = new HashMap<>();
         emptyNeighbours = new ArrayList<>();
     }
 
-    public BoardConfig(List<Tile> stones, List<Tile> emptyNeighbours) {
+    public BoardConfig(Map<String, Tile> stones, List<Tile> emptyNeighbours) {
         this.stones = stones;
         this.emptyNeighbours = emptyNeighbours;
     }
@@ -34,8 +36,19 @@ public class BoardConfig {
      * @param type
      */
     public void addStone(int row, int col, StoneType type) {
-        stones.add(new Tile(row, col, type));
+        stones.put(asKey(row, col), new Tile(row, col, type));
         updateEmptyNeighbours(row, col, type);
+    }
+
+    /**
+     * Returns the string representation of the given row and column
+     * to be used as key in a mapping.
+     * @param row - the row.
+     * @param col - the column.
+     * @return - the string representation.
+     */
+    private String asKey(int row, int col) {
+        return String.valueOf(row) + "/" + String.valueOf(col);
     }
 
     /**
@@ -86,8 +99,8 @@ public class BoardConfig {
         // Print stones list for debugging
         System.out.println("\nBoard stones:");
         System.out.println("------------");
-        for (Tile stone : stones) {
-            System.out.println(stone);
+        for (Map.Entry<String, Tile> stone : stones.entrySet()) {
+            System.out.println(stone.getValue());
         }
         System.out.println("------------\n");
 
@@ -97,7 +110,7 @@ public class BoardConfig {
          * For that, the equals() and hashCode() methods must be implemented in Tile.
          */
         for (Tile neighbour : neighbours) {
-            if (!stones.contains(new Tile(neighbour.getRow(), neighbour.getCol(), type)) &&
+            if (!stones.containsKey(asKey(neighbour.getRow(), neighbour.getCol())) &&
                     !emptyNeighbours.contains(neighbour)) {
                 if (emptyNeighbours.add(neighbour)) {
                     System.out.println(neighbour + " added to list of empty neighbours.");
@@ -131,47 +144,23 @@ public class BoardConfig {
      * @return
      */
     public BoardConfig generateConfig(StoneType stoneType) {
-//        BoardConfig config = new BoardConfig(stones, emptyNeighbours);
-//        List<Tile> nearbyStones = getNearbyStones();
-//        int pos = ThreadLocalRandom.current().nextInt(nearbyStones.size());
-//        config.addStone(nearbyStones.get(pos).getRow(),
-//                        nearbyStones.get(pos).getCol(),
-//                        stoneType);
-//        return config;
+        //TODO
         return null;
     }
 
-//    /**
-//     * 
-//     * @return
-//     */
-//    private List<Tile> getNearbyStones() {
-//        List<Tile> nearbyStones = new ArrayList<>();
-//        for (Tile stone : stones) {
-//            nearbyStones.addAll(getNearbyStones(nearbyStones, stone, 3));
-//        }
-//        return nearbyStones;
-//    }
-
-
-//    private List<Tile> getNearbyStones(List<Tile> nearbyStones, Tile stone, int distance) {
-//        
-//        return null;
-//    }
-
-    public List<Tile> getStones() {
-        return stones;
-    }
-    
     @Override
     public String toString() {
         String toReturn = "----------------\n";
-        for (Tile stone : stones) {
-            toReturn += stone.toString() + "\n";
+        for (Map.Entry<String, Tile> stone : stones.entrySet()) {
+            toReturn += stone.getValue().toString() + "\n";
         }
         return toReturn;
     }
 
+    public Map<String, Tile> getStones() {
+        return stones;
+    }
+    
     public int getGridRows() {
         return GRID_ROWS;
     }
