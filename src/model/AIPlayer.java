@@ -21,9 +21,9 @@ public class AIPlayer implements Player {
         // TODO
 //        applyMinMaxAlphaBeta(config, DEPTH, -Integer.MAX_VALUE, Integer.MAX_VALUE, true);
 
-        Tile tile = new Tile(7, 7, stoneType);
+        Tile tile = null;
         if (!config.getEmptyNeighbours().isEmpty()) {
-            List<Tile> emptyNeighbours = new ArrayList<>(config.getEmptyNeighbours());
+            List<Tile> emptyNeighbours = config.getEmptyNeighbours();
             int pos = randomGenerator.nextInt(emptyNeighbours.size());
             tile = emptyNeighbours.get(pos);
             System.out.println("Empty neighbours size: " + emptyNeighbours.size());
@@ -38,7 +38,13 @@ public class AIPlayer implements Player {
             System.out.println("AI chose: [" + tile.getRow() + "," + tile.getCol() + "," + tile.getType() + "]");
             config.addStone(tile.getRow(), tile.getCol(), stoneType);
         } else {
-            System.out.println("AIPlayer::play(): Tile is null.");
+            info.setRow(7);
+            info.setColumn(7);
+            info.setSteps(30);
+            info.setStoneType(stoneType);
+            info.setPlayer(this);
+            System.out.println("AI chose: [7,7," + stoneType + "]");
+            config.addStone(7, 7, stoneType);
         }
     }
 
@@ -74,5 +80,15 @@ public class AIPlayer implements Player {
     @Override
     public boolean isHuman() {
         return false;
+    }
+
+    @Override
+    public StoneType type() {
+        return stoneType;
+    }
+
+    @Override
+    public String name() {
+        return "AI player";
     }
 }

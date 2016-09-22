@@ -37,6 +37,9 @@ public class PvEGame implements Game {
 
     @Override
     public void play(int row, int col) {
+        System.out.println("\n\n---------------------------------------------------");
+        System.out.println("              HUMAN");
+        System.out.println("---------------------------------------------------");
         playInfo = new PlayInfo(row, col);
         humanPlayer.play(currentConfig, playInfo);
         if (playerWins(humanPlayer)) {
@@ -44,6 +47,9 @@ public class PvEGame implements Game {
         }
         notifyObservers();
         if (playInfo.getState().equals(GameState.RUNNING)) {
+            System.out.println("\n\n---------------------------------------------------");
+            System.out.println("              AI");
+            System.out.println("---------------------------------------------------");
             AIplay(playInfo);
         }
     }
@@ -79,8 +85,7 @@ public class PvEGame implements Game {
 
     @Override
     public boolean playerWins(Player player) {
-        // TODO Auto-generated method stub
-        return false;
+        return currentConfig.playerWins(player);
     }
 
     @Override

@@ -22,4 +22,14 @@ public class HumanPlayer implements Player {
         return true;
     }
 
+    @Override
+    public StoneType type() {
+        return stoneType;
+    }
+
+    @Override
+    public String name() {
+        return "Human player";
+    }
+
 }

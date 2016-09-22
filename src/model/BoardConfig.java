@@ -36,8 +36,78 @@ public class BoardConfig {
      * @param type
      */
     public void addStone(int row, int col, StoneType type) {
-        stones.put(asKey(row, col), new Tile(row, col, type));
+        Map<Direction, Tile> neighbours = findNeighbours(row, col, type);
+        Tile stone = new Tile(row, col, type, neighbours);
+        stones.put(asKey(row, col), stone);
+        updateOtherStonesNeighbours(stone);
         updateEmptyNeighbours(row, col, type);
+    }
+
+    /**
+     * Find neighbouring stones of the same type.
+     * @param row - the stone row.
+     * @param col - the stone column.
+     * @param type - the stone type.
+     * @return The map of neighbours.
+     */
+    private Map<Direction, Tile> findNeighbours(int row, int col, StoneType type) {
+        Map<Direction, Tile> neighbours = new HashMap<>();
+        Tile stone;
+        
+        stone = stones.get(asKey(row, col + 1));
+        if (stone != null && stone.getType().equals(type)) {
+            neighbours.put(Direction.HORIZONTAL, stone);
+        }
+        
+        stone = stones.get(asKey(row + 1, col + 1));
+        if (stone != null && stone.getType().equals(type)) {
+            neighbours.put(Direction.MAIN_DIAGONAL, stone);
+        }
+        
+        stone = stones.get(asKey(row + 1, col));
+        if (stone != null && stone.getType().equals(type)) {
+            neighbours.put(Direction.VERTICAL, stone);
+        }
+        
+        stone = stones.get(asKey(row + 1, col - 1));
+        if (stone != null && stone.getType().equals(type)) {
+            neighbours.put(Direction.COUNTER_DIAGONAL, stone);
+        }
+        return neighbours;
+    }
+
+    /**
+     * Updates the references to this stone on its top, top-left, top-right and left neighbours. 
+     * @param stone - the stone.
+     */
+    private void updateOtherStonesNeighbours(Tile stone) {
+        int row = stone.getRow();
+        int col = stone.getCol();
+        Tile neighbour;
+
+        // Top right
+        neighbour = stones.get(asKey(row - 1, col + 1));
+        if (neighbour != null && neighbour.getType().equals(stone.getType())) {
+            neighbour.addNeighbour(Direction.COUNTER_DIAGONAL, stone);
+        }
+
+        // Top
+        neighbour = stones.get(asKey(row - 1, col));
+        if (neighbour != null && neighbour.getType().equals(stone.getType())) {
+            neighbour.addNeighbour(Direction.VERTICAL, stone);
+        }
+
+        // Top left
+        neighbour = stones.get(asKey(row - 1, col - 1));
+        if (neighbour != null && neighbour.getType().equals(stone.getType())) {
+            neighbour.addNeighbour(Direction.MAIN_DIAGONAL, stone);
+        }
+
+        // Left
+        neighbour = stones.get(asKey(row, col - 1));
+        if (neighbour != null && neighbour.getType().equals(stone.getType())) {
+            neighbour.addNeighbour(Direction.HORIZONTAL, stone);
+        }
     }
 
     /**
@@ -113,9 +183,9 @@ public class BoardConfig {
             if (!stones.containsKey(asKey(neighbour.getRow(), neighbour.getCol())) &&
                     !emptyNeighbours.contains(neighbour)) {
                 if (emptyNeighbours.add(neighbour)) {
-                    System.out.println(neighbour + " added to list of empty neighbours.");
+//                    System.out.println(neighbour + " added to list of empty neighbours.");
                 } else {
-                    System.out.println(neighbour + " was NOT added to list of empty neighbours.");
+//                    System.out.println(neighbour + " was NOT added to list of empty neighbours.");
                 }
             }
         }
@@ -131,12 +201,73 @@ public class BoardConfig {
             }
         }
 
-        System.out.println("\nEmpty neighbours:");
-        System.out.println("-----------------");
-        for (Tile tile : emptyNeighbours) {
-            System.out.println(tile);
+//        System.out.println("\nEmpty neighbours:");
+//        System.out.println("-----------------");
+//        for (Tile tile : emptyNeighbours) {
+//            System.out.println(tile);
+//        }
+//        System.out.println("-----------------");
+    }
+
+    /**
+     * Checks if the specified player has won the game.
+     * @param player - the player.
+     * @return True if it has.
+     */
+    public boolean playerWins(Player player) {
+        System.out.println("\n-----------------");
+        System.out.println("Checking if player has won...");
+        Tile stone;
+
+        for (int row = 0; row <= GRID_ROWS; row++) {
+            for (int col = 0; col <= GRID_COLS; col++) {
+                stone = stones.get(asKey(row, col));
+                if (stone != null && stone.getType().equals(player.type())) {
+                    System.out.println("\nStarting at " + stone);
+                    for (Direction direction : Direction.values()) {
+                        System.out.print("\n- " + direction + ": ");
+                        if (stone.visited(direction)) {
+                            System.out.print("already visited.");
+                        } else if (fullSequence(stone, direction, player.type(), 0)) return true;
+                    }
+                }
+            }
         }
-        System.out.println("-----------------");
+        clearVisitedStones();
+        return false;
+    }
+
+    /**
+     * Visits a tile checking for a sequence of the stones of the same type.
+     * @param tile - the tile to be visited.
+     * @param direction - the direction of the visit.
+     * @param type - the type of the tile.
+     * @param sequence - the number of stones in the sequence. 
+     * @return True if there are 5 stones in the sequence.
+     */
+    private boolean fullSequence(Tile tile, Direction direction, StoneType type, int sequence) {
+        tile.visit(direction);
+        sequence++;
+        System.out.print(sequence + " ");
+        if (sequence == 5) return true;
+        Tile neighbour = tile.getNeighbour(direction); // Neighbours of equal type 
+        if (neighbour != null) {
+            if (neighbour.visited(direction)) {
+                System.out.print("already visited.");
+            } else {
+                return fullSequence(neighbour, direction, type, sequence);
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Clears all stones' visited lists. 
+     */
+    private void clearVisitedStones() {
+        for (Map.Entry<String, Tile> stone : stones.entrySet()) {
+            stone.getValue().clearVisited();
+        }
     }
 
     /**

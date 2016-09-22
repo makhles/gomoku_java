@@ -5,9 +5,11 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import model.Game;
+import model.GameState;
 import model.PlayInfo;
 import model.StoneType;
 
@@ -18,9 +20,12 @@ public class Board extends JPanel implements UserInterface {
     
     private final int TILE_WIDTH = 50;
     private final int TILE_HEIGHT = 50;
+    private final static String WIN_TITLE = "It's a win! :D";
+    private final static String DRAW_TITLE = "It's a draw :(";
 
     private int rows;
     private int cols;
+    private boolean gameRunning;
     private Game game;
 
     private TileButton[][] tiles;
@@ -28,10 +33,12 @@ public class Board extends JPanel implements UserInterface {
     private class TileButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            TileButton button;
-            if (e.getSource() instanceof TileButton) {
-                button = (TileButton) e.getSource();
-                game.play(button.getRow(), button.getCol());
+            if (gameRunning) {
+                TileButton button;
+                if (e.getSource() instanceof TileButton) {
+                    button = (TileButton) e.getSource();
+                    game.play(button.getRow(), button.getCol());
+                }
             }
         }
     }
@@ -40,6 +47,7 @@ public class Board extends JPanel implements UserInterface {
         this.game = game;
         rows = this.game.getBoardConfig().getGridRows();
         cols = this.game.getBoardConfig().getGridCols();
+        gameRunning = true;
         setLayout(new GridLayout(rows, cols));
         setPreferredSize(new Dimension(cols * TILE_WIDTH, rows * TILE_HEIGHT));
         createTiles();
@@ -82,5 +90,24 @@ public class Board extends JPanel implements UserInterface {
         tile.setDisabledIcon(tile.getIcon());
         tile.setEnabled(false);
         revalidate();
+
+        playerWins(info);
+    }
+
+    /**
+     * Checks if the game has ended in a win or draw.
+     * @param info - Information about the last play.
+     */
+    private void playerWins(PlayInfo info) {
+        String msg;
+        if (info.getState().equals(GameState.WIN)) {
+            gameRunning = false;
+            msg = info.getPlayer().name() + " has won the match!";
+            JOptionPane.showMessageDialog(this, msg, WIN_TITLE, JOptionPane.INFORMATION_MESSAGE);
+        } else if (info.getState().equals(GameState.DRAW)) {
+            gameRunning = false;
+            msg = "The game is a draw.";
+            JOptionPane.showMessageDialog(this, msg, DRAW_TITLE, JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 }

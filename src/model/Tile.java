@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Tile {
 
@@ -9,6 +10,7 @@ public class Tile {
     private int col;
     private StoneType type;
     private List<Direction> visited;
+    Map<Direction, Tile> neighbours;
 
     public Tile(int row, int col) {
         this.row = row;
@@ -17,11 +19,56 @@ public class Tile {
         visited = new ArrayList<>();
     }
 
-    public Tile(int row, int col, StoneType type) {
+    public Tile(int row, int col, StoneType type, Map<Direction, Tile> neighbours) {
         this.row = row;
         this.col = col;
         this.type = type;
+        this.neighbours = neighbours;
         visited = new ArrayList<>();
+    }
+    
+    /**
+     * The StoneType is not being taken into account!
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + col;
+        result = prime * result + row;
+        return result;
+    }
+    
+    /**
+     * The StoneType is not being taken into account!
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Tile other = (Tile) obj;
+        if (col != other.col)
+            return false;
+        if (row != other.row)
+            return false;
+        return true;
+    }
+    
+    @Override
+    public String toString() {
+        return "Stone[" + row + "," + col + "," + type + "]";
+    }
+
+    /**
+     * Add the specified direction to the list of visited directions.
+     * @param direction - the direction.
+     */
+    public void visit(Direction direction) {
+        visited.add(direction);
     }
 
     /**
@@ -38,6 +85,24 @@ public class Tile {
      */
     public void clearVisited() {
         visited.clear();
+    }
+
+    /**
+     * Add a new stone to its neighbours.
+     * @param direction - the direction on which the stone is.
+     * @param stone - the stone.
+     */
+    public void addNeighbour(Direction direction, Tile stone) {
+        neighbours.put(direction, stone);
+    }
+
+    /**
+     * Returns the neighbour in the specified direction.
+     * @param direction - the direction.
+     * @return The neighbour if it has one, null otherwise.
+     */
+    public Tile getNeighbour(Direction direction) {
+        return neighbours.get(direction);
     }
 
     public int getRow() {
@@ -64,39 +129,7 @@ public class Tile {
         this.type = type;
     }
 
-    @Override
-    public String toString() {
-        return "Stone[" + row + "," + col + "," + type + "]";
-    }
-
-    /**
-     * The StoneType is not being taken into account!
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + col;
-        result = prime * result + row;
-        return result;
-    }
-
-    /**
-     * The StoneType is not being taken into account!
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Tile other = (Tile) obj;
-        if (col != other.col)
-            return false;
-        if (row != other.row)
-            return false;
-        return true;
+    public Map<Direction, Tile> getNeighbours() {
+        return neighbours;
     }
 }
